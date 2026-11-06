@@ -1,10 +1,10 @@
 import pandas as pd
-from sklearn.dummy import DummyClassifier
+from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import confusion_matrix
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
-
+#Load the dataset
 df = pd.read_csv(r'C:\Users\user\OneDrive\Desktop\PayGuard\data\creditcard.csv')
 print(df.head())
 print (df.info())
@@ -18,7 +18,7 @@ print(f"Percentage of fraudulent transactions: {fraud_percentage:.3f}%")
 df = df.sort_values("Time").reset_index(drop=True)
 X=df.drop(columns=["Class"])
 Y=df["Class"]
-
+#split the dataset into training, validation, and test sets
 Train_end = int(len(df)*0.70)
 val_end= int(len(df)*0.85)
 
@@ -47,23 +47,30 @@ from sklearn.metrics import (
     f1_score,
     average_precision_score,
 )
-dummy_model = DummyClassifier(strategy="most_frequent")
-dummy_model.fit(X_train, Y_train)
-y_pred = dummy_model.predict(X_val)
-y_score = dummy_model.predict_proba(X_val)[:, 1]
+# Naive Bayes Baseline Model
+naive_model = make_pipeline(
+    StandardScaler(),
+    GaussianNB()
+)
 
-print("\nDummy classifier result")
-print("Accuracy:", accuracy_score(Y_val, y_pred))
-print("Precision:", precision_score(Y_val, y_pred, zero_division=0))
-print("Recall:", recall_score(Y_val, y_pred, zero_division=0))
-print("F1-Score:", f1_score(Y_val, y_pred, zero_division=0))
-print("Average Precision:", average_precision_score(Y_val, y_score))
-cm_dummy = confusion_matrix(Y_val, y_pred, labels=[0, 1])
+naive_model.fit(X_train, Y_train)
 
-print("\nDummy Classifier Confusion Matrix:")
-print(cm_dummy)
+y_pred_nb = naive_model.predict(X_val)
+y_score_nb = naive_model.predict_proba(X_val)[:, 1]
 
-tn, fp, fn, tp = cm_dummy.ravel()
+print("\nNaive Bayes Validation Results")
+print("Accuracy:", accuracy_score(Y_val, y_pred_nb))
+print("Precision:", precision_score(Y_val, y_pred_nb, zero_division=0))
+print("Recall:", recall_score(Y_val, y_pred_nb, zero_division=0))
+print("F1-Score:", f1_score(Y_val, y_pred_nb, zero_division=0))
+print("Average Precision:", average_precision_score(Y_val, y_score_nb))
+
+cm_nb = confusion_matrix(Y_val, y_pred_nb, labels=[0, 1])
+
+print("\nNaive Bayes Confusion Matrix:")
+print(cm_nb)
+
+tn, fp, fn, tp = cm_nb.ravel()
 
 print("True Negatives:", tn)
 print("False Positives:", fp)
@@ -143,7 +150,7 @@ for threshold in thresholds:
     print(f"F1 Score: {f1:.3f}")
     print(f"False Positives: {fp}")
     print(f"False Negatives: {fn}")
-
+#test the model on the test set using the best threshold
 
 best_threshold = 0.95
 

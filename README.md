@@ -16,36 +16,44 @@ The dataset contains 284,807 transactions, including 492 fraudulent transactions
 
 I used a chronological data split of 70% training, 15% validation, and 15% testing to evaluate the model on later transactions.
 
-I compared two models:
+I compared two supervised classification models:
 
-- **Dummy Classifier:** Baseline model that predicts every transaction as genuine.
-- **Logistic Regression:** Stronger model using StandardScaler and balanced class weights to address class imbalance.
+- **Gaussian Naive Bayes:** Baseline classification model using StandardScaler for feature scaling.
+- **Logistic Regression:** Stronger classification model using StandardScaler and balanced class weights to address class imbalance.
+
+Both models were trained on the same training set and compared using the same validation set.
 
 ### Model Comparison
 
-| Metric                       | Dummy Classifier | Logistic Regression |
-| ---------------------------- | ---------------- | ------------------- |
-| Validation Accuracy          | 99.87%           | 97.82%              |
-| Validation Precision         | 0.00%            | 5.30%               |
-| Validation Recall            | 0.00%            | 92.86%              |
-| Validation F1-score          | 0.00%            | 10.03%              |
-| Validation Average Precision | 0.13%            | 83.94%              |
+| Metric                       | Gaussian Naive Bayes | Logistic Regression |
+| ---------------------------- | -------------------: | ------------------: |
+| Validation Accuracy          |               97.43% |              97.82% |
+| Validation Precision         |                4.14% |               5.30% |
+| Validation Recall            |               83.93% |              92.86% |
+| Validation F1-score          |                7.89% |              10.03% |
+| Validation Average Precision |                5.00% |              83.94% |
 
-The Dummy Classifier achieved high accuracy because almost all transactions were genuine. However, it failed to detect any fraud.
+Both models were evaluated at the default classification threshold of 0.50.
 
-Logistic Regression detected substantially more fraudulent transactions and achieved much higher average precision. This demonstrates why accuracy alone is misleading for imbalanced fraud datasets.
+Gaussian Naive Bayes detected 47 out of 56 fraudulent transactions but produced 1,089 false positives.
+
+Logistic Regression detected 52 out of 56 fraudulent transactions with 929 false positives.
+
+Logistic Regression achieved higher precision, recall, F1-score, and average precision. The difference in average precision was particularly significant, indicating that Logistic Regression ranked fraudulent transactions more effectively across classification thresholds.
+
+These results demonstrate why accuracy alone is insufficient for evaluating models on highly imbalanced fraud datasets.
 
 ### Threshold Selection
 
 I evaluated Logistic Regression using different thresholds on the validation set.
 
 | Threshold | Precision | Recall | F1-score | False Positives | False Negatives |
-| --------- | --------- | ------ | -------- | --------------- | --------------- |
-| 0.50      | 5.30%     | 92.86% | 10.03%   | 929             | 4               |
-| 0.70      | 11.00%    | 91.10% | 19.70%   | 411             | 5               |
-| 0.80      | 17.20%    | 91.10% | 28.90%   | 246             | 5               |
-| 0.90      | 27.20%    | 89.30% | 41.70%   | 134             | 6               |
-| 0.95      | 35.50%    | 87.50% | 50.50%   | 89              | 7               |
+| --------- | --------: | -----: | -------: | --------------: | --------------: |
+| 0.50      |     5.30% | 92.86% |   10.03% |             929 |               4 |
+| 0.70      |    11.00% | 91.10% |   19.70% |             411 |               5 |
+| 0.80      |    17.20% | 91.10% |   28.90% |             246 |               5 |
+| 0.90      |    27.20% | 89.30% |   41.70% |             134 |               6 |
+| 0.95      |    35.50% | 87.50% |   50.50% |              89 |               7 |
 
 **Selected Model:** Logistic Regression with a threshold of **0.95**.
 
@@ -60,16 +68,16 @@ I selected 0.95 as a reasonable starting threshold for a human-reviewed fraud al
 The selected model was evaluated on the held-out test set.
 
 | Metric            | Result |
-| ----------------- | ------ |
+| ----------------- | -----: |
 | Accuracy          | 99.84% |
 | Precision         | 42.11% |
 | Recall            | 76.92% |
 | F1-score          | 54.42% |
 | Average Precision | 70.69% |
-| True Positives    | 40     |
+| True Positives    |     40 |
 | True Negatives    | 42,615 |
-| False Positives   | 55     |
-| False Negatives   | 12     |
+| False Positives   |     55 |
+| False Negatives   |     12 |
 
 The model detected 40 out of 52 fraudulent transactions. However, 12 fraud cases were missed and 55 genuine transactions were incorrectly flagged.
 
@@ -146,29 +154,33 @@ For complaint triage, I recommend human-supervised routing, especially for fraud
 
 Both systems should be monitored for performance, errors, and reliability.
 
-A more detailed production recommendation is provided in `memo.md`.
+A more detailed production recommendation is provided in `Memo.pdf`.
 
 ## Project Setup
 
 **Requirements:** Python, pandas, numpy, scikit-learn, joblib, groq, and python-dotenv.
 
+Install dependencies from the project root:
+
+`pip install -r requirements.txt`
+
 For complaint triage, add the `GROQ_API_KEY` to a local `.env` file. Do not include the API key in the submission.
 
 ### Run Part A
 
-```bash
-cd fraud_detection
-python train.py
-python predict.py
-```
+From the project root:
+
+`python fraud_detection/train.py`
+
+`python fraud_detection/predict.py`
 
 ### Run Part B
 
-```bash
-cd complain_triage
-python prepare_data.py
-python batch_triage.py
-```
+From the project root:
+
+`python complain_triage/prepare_data.py`
+
+`python complain_triage/batch_triage.py`
 
 API rate limits should be considered before running larger batches.
 
@@ -180,12 +192,10 @@ The problem understanding, solution decisions, evaluation interpretation, and fi
 
 Further details are provided in `AI_USAGE.md`.
 
-## Conclusion
+## Scope Decisions: What I Cut and Why
 
-This project demonstrates how machine learning and LLMs can support fraud detection and customer complaint management.
-
-Logistic Regression performed significantly better than the Dummy Classifier at identifying fraudulent transactions. The selected model was evaluated on a held-out test set and saved for inference.
-
-Complaint triage was tested on a limited sample due to API restrictions.
-
-Both solutions require further validation and human oversight before production deployment.
+- **Complex ensemble models:** I focused on Gaussian Naive Bayes and Logistic Regression to keep the comparison interpretable and the implementation manageable within the assignment timeline.
+- **Extensive hyperparameter tuning:** I prioritized validation metrics, threshold selection, and clear trade-off analysis over exhaustive optimization.
+- **Full complaint batch processing:** I prepared 400 complaints but limited the LLM pilot because of API rate limits.
+- **User interface and production deployment:** I did not implement a UI or deploy a live service because the assignment focused on working prototypes and production design recommendations.
+- **LLM fine-tuning:** I used prompting and output validation instead of fine-tuning to keep the complaint triage solution lightweight and within scope.

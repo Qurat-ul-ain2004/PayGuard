@@ -2,38 +2,60 @@
 
 ## AI Tools Used
 
-**ChatGPT (OpenAI):** Used for code generation, debugging assistance, implementation guidance, and documentation support.
+### 1. ChatGPT (OpenAI)
 
-**Groq API (GPT-OSS-20B):** Used as the LLM inference service for customer complaint classification, summarization, urgency assessment, and human-review decisions in Part B.
+ChatGPT was used as a development assistant for:
 
-## Work Completed Independently
+**Part A: Fraud Detection**
 
-I independently understood the PayGuard business problems, assignment requirements, and objectives.
+- Generating and modifying Python code for data preprocessing and model training.
+- Implementing Gaussian Naive Bayes and Logistic Regression.
+- Setting up StandardScaler pipelines and chronological data splitting.
+- Debugging errors and assisting with model evaluation.
+- Implementing threshold comparisons, confusion matrices, and model saving.
+- Assisting with inference code.
 
-I made the key decisions regarding the overall solution approach, model selection, evaluation metrics, fraud detection threshold, complaint triage design, and implementation scope.
+**Part B: Complaint Triage**
 
-I also reviewed the model outputs, interpreted the evaluation results, and considered the limitations and trade-offs of the proposed solutions.
+- Assisting with dataset preparation and sampling.
+- Developing LLM prompts for complaint classification and summarization.
+- Implementing structured JSON output validation and fallback handling.
+- Debugging API errors and handling rate limits.
+- Assisting with evaluation and API cost estimation.
 
-## Work Assisted by AI
+**Part C: Production Recommendation**
 
-ChatGPT assisted with generating Python code, explaining implementation steps, debugging errors, and preparing documentation.
+- Assisting with structuring and drafting the production design memo.
+- Explaining deployment considerations, monitoring, human review, and operational risks.
 
-Although AI assisted in writing the code, I reviewed the implementation and developed a complete understanding of its logic, workflow, and functionality.
+**Documentation**
 
-The AI-generated suggestions were not accepted blindly. I evaluated them against the assignment requirements and made the final decisions about what to implement.
+- Assisting with the README, setup instructions, technical explanations, and documentation revisions.
 
-## Verification and Responsibility
+### 2. Groq API (GPT-OSS-20B)
 
-I executed and tested the code, examined the outputs, and evaluated the results.
+The Groq API was used in Part B to process customer complaint narratives.
 
-I take responsibility for the final implementation, technical decisions, and reported findings. I can explain the code, the reasoning behind my decisions, and the limitations of the solution.
+The language model generated structured outputs containing complaint categories, urgency, summaries, and human-review indicators.
 
-## Estimated AI Contribution
+## Estimated AI-Generated Code
 
-ChatGPT was used extensively for initial code generation, debugging, and implementation guidance.
+**Approximate share of code generated or substantially modified with ChatGPT assistance: [XX%].**
 
-**Estimated AI-generated code: (approximate).**
+This estimate covers Python implementation across Parts A and B.&#x20;
 
-I actively reviewed, modified, tested, and validated the code. I independently evaluated model performance, selected the final approach, and made decisions based on the assignment requirements.
+## Code Ownership and Verification
 
-AI assistance supported implementation, while technical understanding, evaluation, and final responsibility remained mine
+I executed the code, inspected model evaluation results, tested inference, and reviewed the implementation decisions.
+
+I compared Gaussian Naive Bayes and Logistic Regression using validation metrics and selected Logistic Regression based on its stronger performance.
+
+I evaluated different classification thresholds and selected 0.95 as a starting point for a human-reviewed fraud alert workflow.
+
+I also tested the complaint triage prototype and documented the limitations caused by API rate limits.
+
+I take responsibility for understanding, explaining, modifying, and maintaining the submitted code.
+
+## Summary
+
+AI assistance was used for code generation, debugging, technical explanations, and documentation. The final implementation decisions, reported results, and responsibility for the submission remain with the author.
